@@ -10,7 +10,7 @@ Aquarium::Aquarium() : Aquarium("演示鱼缸", 100, 60)
 }
 
 Aquarium::Aquarium(std::string name, double width, double height)
-    : name_(name), width_(width), height_(height), fishCount_(0)
+    : name_(name), width_(width), height_(height), fishes_()
 {
     if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0 ||
         width > 10000 || height > 10000)
@@ -44,7 +44,7 @@ void Aquarium::addFish(const Fish &fish)
 {
     validateBounds(fish);
 
-    for (int i = 0; i < fishCount_; ++i)
+    for (std::size_t i = 0; i < fishes_.size(); ++i)
     {
         if (fishes_[i].id() == fish.id())
         {
@@ -52,28 +52,16 @@ void Aquarium::addFish(const Fish &fish)
         }
     }
 
-    if (fishCount_ >= Capacity)
-    {
-        throw std::length_error("鱼缸已满，最多容纳20条鱼");
-    }
-
-    fishes_[fishCount_] = fish;
-    ++fishCount_;
+    fishes_.push_back(fish);
 }
 
 bool Aquarium::removeFish(int id)
 {
-    for (int i = 0; i < fishCount_; ++i)
+    for (std::size_t i = 0; i < fishes_.size(); ++i)
     {
         if (fishes_[i].id() == id)
         {
-            for (int j = i; j < fishCount_ - 1; ++j)
-            {
-                fishes_[j] = fishes_[j + 1];
-            }
-
-            --fishCount_;
-            fishes_[fishCount_] = Fish();
+            fishes_.erase(fishes_.begin() + i);
             return true;
         }
     }
@@ -83,7 +71,7 @@ bool Aquarium::removeFish(int id)
 
 const Fish &Aquarium::fish(int id) const
 {
-    for (int i = 0; i < fishCount_; ++i)
+    for (std::size_t i = 0; i < fishes_.size(); ++i)
     {
         if (fishes_[i].id() == id)
         {
@@ -96,7 +84,7 @@ const Fish &Aquarium::fish(int id) const
 
 Fish &Aquarium::findMutable(int id)
 {
-    for (int i = 0; i < fishCount_; ++i)
+    for (std::size_t i = 0; i < fishes_.size(); ++i)
     {
         if (fishes_[i].id() == id)
         {
@@ -134,9 +122,9 @@ bool Aquarium::feed(int hunterId, int preyId, const CollisionRule &rule)
 void Aquarium::print(std::ostream &out) const
 {
     out << "鱼缸{名称=" << name_ << "，宽高=" << width_ << 'x' << height_
-        << "，鱼数量=" << fishCount_ << "，容量=" << Capacity << "}\n";
+        << "，鱼数量=" << fishes_.size() << "}\n";
 
-    for (int i = 0; i < fishCount_; ++i)
+    for (std::size_t i = 0; i < fishes_.size(); ++i)
     {
         fishes_[i].print(out);
     }

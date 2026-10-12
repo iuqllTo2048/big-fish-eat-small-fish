@@ -3,14 +3,13 @@
 #include "Fish.h"
 
 #include <string>
+#include <vector>
 
 class CollisionRule;
 
 class Aquarium
 {
   public:
-    static const int Capacity = 20;
-
     Aquarium();
     Aquarium(std::string name, double width, double height);
 
@@ -29,9 +28,9 @@ class Aquarium
         return height_;
     }
 
-    int size() const
+    std::size_t size() const
     {
-        return fishCount_;
+        return fishes_.size();
     }
 
     void setName(const std::string &name);
@@ -46,8 +45,7 @@ class Aquarium
     std::string name_;
     double width_;
     double height_;
-    Fish fishes_[Capacity];
-    int fishCount_;
+    std::vector<Fish> fishes_;
 
     Fish &findMutable(int id);
     void validateBounds(const Fish &fish) const;
