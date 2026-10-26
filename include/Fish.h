@@ -1,15 +1,15 @@
 #pragma once
-
 #include <iosfwd>
+#include <memory>
 #include <string>
-
 class CollisionRule;
 
 class Fish
 {
   public:
-    Fish();
-    Fish(int id, std::string name, double x, double y, double radius, int energy = 100);
+    Fish(int id, const std::string &name, double x, double y, double radius, int energy = 100,
+         int eatenCount = 0);
+    virtual ~Fish();
 
     int id() const
     {
@@ -55,10 +55,19 @@ class Fish
     void setPosition(double x, double y);
     void setRadius(double radius);
     void setEnergy(int energy);
+    void consumeEnergy(int amount);
+    bool eat(Fish &prey, const CollisionRule &rule);
     void print(std::ostream &out) const;
 
-    // 捕食会改变猎物的状态，因此这里必须传引用。
-    bool eat(Fish &prey, const CollisionRule &rule);
+    // 实验三、四：派生类通过同一接口提供不同的运动和存储行为。
+    virtual char typeCode() const = 0;
+    virtual void update(double seconds, double width, double height) = 0;
+    virtual std::unique_ptr<Fish> clone() const = 0;
+    virtual void write(std::ostream &out) const = 0;
+
+  protected:
+    void moveInside(double dx, double dy, double width, double height);
+    void writeCommon(std::ostream &out) const;
 
   private:
     int id_;
